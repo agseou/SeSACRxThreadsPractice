@@ -128,6 +128,7 @@
 				041280532AEF9C1F00972552 /* SignUp */,
 				041280542AEF9C2600972552 /* SignIn */,
 				0412806D2AEFAD0F00972552 /* SignUpOptional */,
+				E28F8F662BB80FB9001D2D4C /* Sample */,
 				041280612AEFA0BE00972552 /* CustomView */,
 				041280232AEF9BAB00972552 /* AppDelegate.swift */,
 				041280252AEF9BAB00972552 /* SceneDelegate.swift */,
@@ -136,7 +137,6 @@
 				0412802E2AEF9BAC00972552 /* LaunchScreen.storyboard */,
 				041280312AEF9BAC00972552 /* Info.plist */,
 				041280772AF1D14000972552 /* Resource.swift */,
-				E2EC0FEF2BB6B5FA007CA40F /* SampleViewController.swift */,
 			);
 			path = SeSACRxThreads;
 			sourceTree = "<group>";
@@ -193,6 +193,14 @@
 				041280722AEFAD4B00972552 /* NicknameViewController.swift */,
 			);
 			path = SignUpOptional;
+			sourceTree = "<group>";
+		};
+		E28F8F662BB80FB9001D2D4C /* Sample */ = {
+			isa = PBXGroup;
+			children = (
+				E2EC0FEF2BB6B5FA007CA40F /* SampleViewController.swift */,
+			);
+			path = Sample;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */

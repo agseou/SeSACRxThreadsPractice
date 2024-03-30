@@ -159,7 +159,7 @@ class BirthdayViewController: UIViewController {
             .bind(with: self) { owner, _ in
                 print("가입완료")
                 guard let sceneDelegate = UIApplication.shared.connectedScenes.first?.delegate as? SceneDelegate else { return }
-                sceneDelegate.window?.rootViewController = SampleViewController()
+                sceneDelegate.window?.rootViewController = UINavigationController(rootViewController: SampleViewController())
             }
             .disposed(by: disposeBag)
     }
