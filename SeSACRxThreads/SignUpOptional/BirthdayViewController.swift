@@ -7,6 +7,8 @@
  
 import UIKit
 import SnapKit
+import RxSwift
+import RxCocoa
 
 class BirthdayViewController: UIViewController {
     
@@ -22,7 +24,6 @@ class BirthdayViewController: UIViewController {
     let infoLabel: UILabel = {
        let label = UILabel()
         label.textColor = Color.black
-        label.text = "만 17세 이상만 가입 가능합니다."
         return label
     }()
     
@@ -36,7 +37,6 @@ class BirthdayViewController: UIViewController {
     
     let yearLabel: UILabel = {
        let label = UILabel()
-        label.text = "2023년"
         label.textColor = Color.black
         label.snp.makeConstraints {
             $0.width.equalTo(100)
@@ -46,7 +46,6 @@ class BirthdayViewController: UIViewController {
     
     let monthLabel: UILabel = {
        let label = UILabel()
-        label.text = "33월"
         label.textColor = Color.black
         label.snp.makeConstraints {
             $0.width.equalTo(100)
@@ -56,7 +55,6 @@ class BirthdayViewController: UIViewController {
     
     let dayLabel: UILabel = {
        let label = UILabel()
-        label.text = "99일"
         label.textColor = Color.black
         label.snp.makeConstraints {
             $0.width.equalTo(100)
@@ -66,20 +64,20 @@ class BirthdayViewController: UIViewController {
   
     let nextButton = PointButton(title: "가입하기")
     
+    let year = PublishSubject<Int>()
+    let month = PublishSubject<Int>()
+    let day = PublishSubject<Int>()
+    
+    let disposeBag = DisposeBag()
+    
     override func viewDidLoad() {
         super.viewDidLoad()
 
         view.backgroundColor = Color.white
         
         configureLayout()
-        
-        nextButton.addTarget(self, action: #selector(nextButtonClicked), for: .touchUpInside)
+        configureBind()
     }
-    
-    @objc func nextButtonClicked() {
-        print("가입완료")
-    }
-
     
     func configureLayout() {
         view.addSubview(infoLabel)
@@ -113,4 +111,56 @@ class BirthdayViewController: UIViewController {
         }
     }
 
+    func configureBind() {
+        
+        year
+            .map { "\($0)년" }
+            .bind(to: yearLabel.rx.text)
+            .disposed(by: disposeBag)
+        
+        month
+            .map { "\($0)월" }
+            .bind(to: monthLabel.rx.text)
+            .disposed(by: disposeBag)
+        
+        day
+            .map { "\($0)일" }
+            .bind(to: dayLabel.rx.text)
+            .disposed(by: disposeBag)
+        
+        let validation = birthDayPicker.rx.date
+            .map { Calendar.current.date(byAdding: .year, value: 17, to: $0)! <= Date() }
+        
+        validation
+            .bind(to: nextButton.rx.isEnabled)
+            .disposed(by: disposeBag)
+        
+        validation
+            .bind(with: self) { owner, value in
+            owner.nextButton.backgroundColor = value ? .systemPink : .lightGray
+            owner.infoLabel.textColor = value ? .systemBlue : .systemRed
+            owner.infoLabel.text = value ? "가입 가능한 나이입니다." : "만 17세 이상만 가입 가능합니다."
+        }
+            .disposed(by: disposeBag)
+            
+        
+        birthDayPicker.rx.date
+            .bind(with: self) { owner, date in
+               let components = Calendar.current.dateComponents([.year, .month, .day], from: date)
+                guard let year = components.year, let month = components.month, let day = components.day else { return }
+                owner.year.onNext(year)
+                owner.month.onNext(month)
+                owner.day.onNext(day)
+            }
+            .disposed(by: disposeBag)
+        
+        
+        nextButton.rx.tap
+            .bind(with: self) { owner, _ in
+                print("가입완료")
+                guard let sceneDelegate = UIApplication.shared.connectedScenes.first?.delegate as? SceneDelegate else { return }
+                sceneDelegate.window?.rootViewController = SampleViewController()
+            }
+            .disposed(by: disposeBag)
+    }
 }
