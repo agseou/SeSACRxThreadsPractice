@@ -7,6 +7,8 @@
 
 import UIKit
 import SnapKit
+import RxSwift
+import RxCocoa
 
 class SignInViewController: UIViewController {
 
@@ -15,6 +17,10 @@ class SignInViewController: UIViewController {
     let signInButton = PointButton(title: "로그인")
     let signUpButton = UIButton()
     
+    let viewModel = SignInViewModel()
+    
+    let disposeBag = DisposeBag()
+    
     override func viewDidLoad() {
         super.viewDidLoad()
 
@@ -22,14 +28,29 @@ class SignInViewController: UIViewController {
         
         configureLayout()
         configure()
+        configureBind()
+    }
+    
+    func configureBind() {
         
-        signUpButton.addTarget(self, action: #selector(signUpButtonClicked), for: .touchUpInside)
+        viewModel
+            .validation
+            .bind(to: signInButton.rx.isEnabled)
+            .disposed(by: disposeBag)
+        
+        viewModel
+            .validation
+            .bind(with: self) { owner, value in
+                owner.signInButton.backgroundColor = value ? .systemPink : .lightGray
+            }
+            .disposed(by: disposeBag)
+        
+        signUpButton.rx.tap
+            .bind(with: self) { owner, _ in
+                owner.navigationController?.pushViewController(SignUpViewController(), animated: true)
+            }
+            .disposed(by: disposeBag)
     }
-    
-    @objc func signUpButtonClicked() {
-        navigationController?.pushViewController(SignUpViewController(), animated: true)
-    }
-    
     
     func configure() {
         signUpButton.setTitle("회원이 아니십니까?", for: .normal)

@@ -62,6 +62,14 @@ class SampleViewController: UIViewController {
                 cell.textLabel?.text = "\(element)"
             }
             .disposed(by: disposeBag)
+        
+        tableView.rx.itemSelected
+            .bind(with: self) { owner, idx in
+                var currentItems = try! owner.items.value()
+                currentItems.remove(at: idx.row)
+                owner.items.onNext(currentItems)
+            }
+            .disposed(by: disposeBag)
     }
     
 }
