@@ -33,6 +33,16 @@ class SignInViewController: UIViewController {
     
     func configureBind() {
         
+        emailTextField.rx.text
+            .orEmpty
+            .bind(to: viewModel.email)
+            .disposed(by: disposeBag)
+        
+        passwordTextField.rx.text
+            .orEmpty
+            .bind(to: viewModel.password)
+            .disposed(by: disposeBag)
+        
         viewModel
             .validation
             .bind(to: signInButton.rx.isEnabled)
